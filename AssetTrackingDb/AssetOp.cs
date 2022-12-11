@@ -1,7 +1,9 @@
 ﻿using AssetTrackingDb;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,7 +84,7 @@ namespace AssetTrackingDb
                     Console.ResetColor();
                 }
 
-                else if (TM >= 33 && TM >= 36)//6 months to expire
+                else if (TM <= 36 && TM > 33)//6 months to expire
 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -90,7 +92,7 @@ namespace AssetTrackingDb
                     Console.ResetColor();
                 }
 
-                else if (TM >= 30 && TM < 33)//3 months to expire
+                else if (TM >= 30 && TM < 34)//3 months to expire
 
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
@@ -175,21 +177,146 @@ namespace AssetTrackingDb
             {
                 bool flag;
                 String iD;
-                AssetOp.Display(AssetD);
-                Console.Write("Enter Asset ID to remove from list: ");
+                AssetOp.Display(AssetD);               
                 do
                 {
+                    Console.Write("Enter Asset ID to remove from list: ");
                     iD = Console.ReadLine();
-                    flag = Validation.NumVal(iD);
-                    if (flag && (Convert.ToInt32(iD) > AssetD.Count)) { flag = false; CommonOp.ErrorMessage("Proper ID"); }
+                    flag = Validation.IdVal(iD, AssetD);
                 } while (!flag);
 
                 int ID = Convert.ToInt32(iD);
                 Asset Assets = Context.Assets.FirstOrDefault(a => a.Id == ID);
 
-                Context.Assets.Remove(Assets);
+                Context.Assets.Remove(Assets);//deleting asset
                 Context.SaveChanges();
             }
+        }
+        internal static void UpdateAsset(List<Asset> AssetD)
+        {
+            MyDbContext Context = new MyDbContext();
+            bool Run = true;
+
+            {
+                bool flag;
+                String iD;
+                AssetOp.Display(AssetD);
+                do
+                {
+                    Console.Write("Enter Asset ID to Update a list: ");
+                    iD = Console.ReadLine();
+                    flag = Validation.IdVal(iD, AssetD);
+                    
+                } while (!flag);
+
+                int ID = Convert.ToInt32(iD);
+                Asset Assets = Context.Assets.FirstOrDefault(a => a.Id == ID);
+                {
+                    Assets.Type = AssetIO.GetType();
+                    Assets.Brand = AssetIO.GetBrand(Assets.Type);
+                    Assets.Model = AssetIO.GetModel(Assets.Type, Assets.Brand);
+                    Assets.PDate = AssetIO.ReadDate("Purchase Date");
+                    Assets.Price = AssetIO.ReadNum("Asset Price in USD");//Getting price in USD
+                    String Location = AssetIO.ReadData("Asset Location");
+                    Assets.Location = Char.ToUpper(Location[0]) + Location.Substring(1);//Converting first character to uppercase
+                    Assets.Location = Validation.ChkAbb(Location); //Check for country alias name and code
+                    Assets.Currency = AssetIO.Ccode2(Location);  //Getting international Currency code 
+                    Assets.LoPrice = Convert.ToInt32(AssetIO.LocalPrice(Assets.Currency, Assets.Price));
+                }
+                
+                Context.Assets.Update(Assets);
+                
+                Context.SaveChanges();
+                
+            }
+        }
+        internal static void LoadAsset() // sample asset data to start with the operation
+        {
+            MyDbContext Context = new MyDbContext();
+            bool Run = true;
+
+            String Type; // Declaring variables for passing arguments
+            String Brand;
+            String Model;
+            DateTime PDate;
+            int Price;
+            String? Location;
+            String currency;
+            int LPrice;
+
+            {
+                Asset AssetD = new Asset();
+                // Adding sample assets
+                Type = "Laptop/Computers"; Brand = "Apple";Model = "MacBook Air"; 
+                PDate = Convert.ToDateTime("11/25/2019"); Price = 209; Location = "Italy"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type;AssetD.Brand = Brand;AssetD.Model = Model;AssetD.PDate = PDate;
+                AssetD.Price = Price;AssetD.Location = Location;AssetD.Currency = currency;AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Laptop/Computers"; Brand = "Asus"; Model = "ZenBook";
+                PDate = Convert.ToDateTime("09/15/2019"); Price = 209; Location = "Norway"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Mobile Phones"; Brand = "Apple"; Model = "iphone 13";
+                PDate = Convert.ToDateTime("12/29/2021"); Price = 298; Location = "Denmark"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Mobile Phones"; Brand = "Samsung"; Model = "Galaxy A21s";
+                PDate = Convert.ToDateTime("04/29/2020"); Price = 200; Location = "Poland"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Mobile Phones"; Brand = "Nokia"; Model = "Nokia 2660 DS";
+                PDate = Convert.ToDateTime("11/29/2019"); Price = 200; Location = "Finland"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Laptop/Computers"; Brand = "Lenovo"; Model = "ThinkPad X1";
+                PDate = Convert.ToDateTime("05/19/2020"); Price = 388; Location = "Sweden"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+                Context.SaveChanges();
+            }
+            {
+                Asset AssetD = new Asset();
+                Type = "Laptop/Computers"; Brand = "Apple"; Model = "MacBook Pro";
+                PDate = Convert.ToDateTime("10/22/2021"); Price = 1200; Location = "Sweden"; currency = AssetIO.Ccode2(Location);
+                LPrice = Convert.ToInt32(AssetIO.LocalPrice(currency, Price)); //Converting USD price to local cuntry price
+                AssetD.Type = Type; AssetD.Brand = Brand; AssetD.Model = Model; AssetD.PDate = PDate;
+                AssetD.Price = Price; AssetD.Location = Location; AssetD.Currency = currency; AssetD.LoPrice = LPrice;
+                Context.Assets.Add(AssetD);
+
+                Context.SaveChanges();
+            }
+            
         }
     }
 }

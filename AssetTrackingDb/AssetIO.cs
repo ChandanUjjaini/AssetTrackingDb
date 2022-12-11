@@ -66,7 +66,7 @@ namespace AssetTrackingDb
             //bool valDate;
             do
             {
-                ReadDate = CommonOp.ReadData(read + "in \"mm/dd/yyyy\" format");
+                ReadDate = CommonOp.ReadData(read + " in \"mm/dd/yyyy\" format");
                 Flag = Validation.DateVal(ReadDate);
                 if (Flag == true)
                 {
@@ -83,7 +83,7 @@ namespace AssetTrackingDb
         {
             bool Flag;
             String PriceIn;
-            int Data, num;
+            int Data;
             do
             {
                 PriceIn = CommonOp.ReadData(read);
@@ -183,7 +183,7 @@ namespace AssetTrackingDb
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
                 Console.WriteLine("¤ Please Select Asset Type ¤");
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
-                Console.WriteLine("¤ Apple\t\t  -\t1  ¤\n¤ Samsung\t  -\t2  ¤\n¤ Nokia\t\t  -\t2  ¤");
+                Console.WriteLine("¤ Apple\t\t  -\t1  ¤\n¤ Samsung\t  -\t2  ¤\n¤ Nokia\t\t  -\t3  ¤");
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
                 int Sel = Selchk("selection", 3);
 
@@ -213,7 +213,7 @@ namespace AssetTrackingDb
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
                 Console.WriteLine("¤ Please Select Asset Type ¤");
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
-                Console.WriteLine("¤ MacBook Air\t  -\t1  ¤\n¤ MacBook Pro\t  -\t2  ¤\n¤ iMac\t  -\t3  ¤");
+                Console.WriteLine("¤ MacBook Air\t  -\t1  ¤\n¤ MacBook Pro\t  -\t2  ¤\n¤ iMac\t\t  -\t3  ¤");
                 Console.WriteLine("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤");
                 int Sel = Selchk("selection", 3);
 

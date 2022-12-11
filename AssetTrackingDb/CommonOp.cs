@@ -30,6 +30,8 @@ namespace AssetTrackingDb
         {
             
             String date = PDate.ToString().Substring(0, 10);
+            string[] date1 = date.Split(' ');
+            date = date1[0];            
             Console.WriteLine(String.Format("{0,-10}", Id.ToString().PadRight(3) + Type.PadRight(20) + Brand.PadRight(12) + Model.PadRight(19)
                     + date.ToString().PadRight(17) + Price.ToString().PadRight(12) + Location.PadRight(12)
                     + Currency.PadRight(10) + Lprice));

@@ -85,13 +85,21 @@ namespace AssetTrackingDb
             Flag = Validation.ChkData(code);
             return Flag;
         }
-        public static bool NumVal(string read) //Checking for valid cuntry name
+        public static bool IdVal(string read, List<Asset> AssetD) //Checking for valid cuntry name
         {
             bool Flag;
             Flag = int.TryParse(read, out int num);
-            if (!Flag)
+            if (Flag)
             {
-                CommonOp.ErrorMessage("Proper ID");                
+                foreach (Asset aId in AssetD)
+                {
+                    if (Convert.ToInt32(read) == aId.Id) { Flag = true; break; }
+
+                    else { Flag = false; }
+
+                }
+
+                if (Flag == false) { CommonOp.ErrorMessage("ID"); }
             }
             return Flag;
         }
